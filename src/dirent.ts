@@ -2,7 +2,19 @@ import { Dirent, readdirSync } from "node:fs";
 
 const activeRegex = /^[^_].+\.js$/;
 const activeFolderRegex = /^[^_]/;
-function isActive(file: Dirent): false | RegExpMatchArray | null {
+
+/**
+ * Checks if a file is considered active based on its name.
+ * This is used to filter out files that are not meant to be exported.
+ * Files starting with an underscore are considered inactive.
+ * 
+ * ```ts
+ * import { dirent } from "@made-simple/util";
+ * dirent.isActive(new Dirent("example.js")); // ["example.js"]
+ * dirent.isActive(new Dirent("_example.js")); // false
+ * ```
+ */
+export function isActive(file: Dirent): false | RegExpMatchArray | null {
     return (file.isFile() && file.name.match(activeRegex)) || (file.isDirectory() && file.name.match(activeFolderRegex));
 }
 
@@ -31,5 +43,6 @@ export function iterate<T>(url: URL, callback: (data: T) => void): void {
 }
 
 export default {
-    iterate
+    iterate,
+    isActive
 }
