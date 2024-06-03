@@ -1,3 +1,22 @@
+const UIDs: string[] = [];
+
+/**
+ * Generates a unique identifier.
+ * 
+ * ```ts
+ * import { thread } from "@made-simple/util";
+ * const uid = thread.generateUID();
+ * ```
+ */
+export function generateUID(): string {
+    let uid: string;
+    do uid = Math.random().toString(36).substring(2, 15);
+    while (UIDs.includes(uid));
+
+    UIDs.push(uid);
+    return uid;
+}
+
 /**
  * Pauses the current thread for a specified amount of time.
  * This is synchronous but will yield.
@@ -34,6 +53,7 @@ export function sleepAsync(ms: number): Promise<number> {
 }
 
 export default {
+    generateUID,
     sleep,
     sleepAsync
 }
