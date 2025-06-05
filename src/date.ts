@@ -52,8 +52,8 @@ export function getMonthFromTimestamp(timestamp: number): string {
  * console.log(date.toString(35824637 * 1000, 3)) // 1 year, 1 month, and 18 days
  * ```
  */
-export function toString(ms: number, partsCount: number = 2): string {
-    if (partsCount < 1) partsCount = 2;
+export function toString(ms: number, parts: number = 2): string {
+    if (parts < 1) parts = 2;
 
     let second = Math.floor(ms / 1000);
     if (!second) return "0 seconds";
@@ -70,19 +70,19 @@ export function toString(ms: number, partsCount: number = 2): string {
     const minute = Math.floor(second / 60);
     second -= minute * 60;
 
-    let spotsUsed = 0;
-    const parts: string[] = [];
+    let usedParts = 0;
+    const storedParts: string[] = [];
     for (const [unit, value] of Object.entries({ month, day, hour, minute, second })) {
-        if (value === 0 && spotsUsed === 0) continue;
-        if (spotsUsed === partsCount) break;
-        spotsUsed++;
+        if (value === 0 && usedParts === 0) continue;
+        if (usedParts === parts) break;
+        usedParts++;
 
-        parts.push(`${value} ${unit}${value === 1 ? "" : "s"}`);
+        storedParts.push(`${value} ${unit}${value === 1 ? "" : "s"}`);
     }
 
-    if (partsCount === 1) return parts[0];
-    else if (partsCount === 2) return `${parts[0]}${parts[1] ? ` and ${parts[1]}` : ""}`;
-    else return `${parts.slice(0, -1).join(", ")}, and ${parts.slice(-1)}`;
+    if (parts === 1) return storedParts[0];
+    else if (parts === 2) return `${storedParts[0]}${storedParts[1] ? ` and ${storedParts[1]}` : ""}`;
+    else return `${storedParts.slice(0, -1).join(", ")}, and ${storedParts.slice(-1)}`;
 }
 
 export default {

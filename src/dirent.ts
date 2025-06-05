@@ -1,21 +1,21 @@
 import { Dirent, readdirSync } from "node:fs";
 
-const activeRegex = /^[^_].+\.js$/;
-const activeFolderRegex = /^[^_]/;
+const fileRegex = /^[^_].+\.js$/;
+const folderRegex = /^[^_]/;
 
 /**
- * Checks if a file is considered active based on its name.
+ * Validates if a file follows the Regex pattern. This will ignore files starting with an underscore.
  * This is used to filter out files that are not meant to be exported.
  * Files starting with an underscore are considered inactive.
  * 
  * ```ts
  * import { dirent } from "@made-simple/util";
- * dirent.isActive(new Dirent("example.js")); // ["example.js"]
- * dirent.isActive(new Dirent("_example.js")); // false
+ * dirent.isValidRegex(new Dirent("example.js")); // ["example.js"]
+ * dirent.isValidRegex(new Dirent("_example.js")); // false
  * ```
  */
-export function isActive(file: Dirent): false | RegExpMatchArray | null {
-    return (file.isFile() && file.name.match(activeRegex)) || (file.isDirectory() && file.name.match(activeFolderRegex));
+export function isValidRegex(file: Dirent): false | RegExpMatchArray | null {
+    return (file.isFile() && file.name.match(fileRegex)) || (file.isDirectory() && file.name.match(folderRegex));
 }
 
 /**
@@ -24,25 +24,25 @@ export function isActive(file: Dirent): false | RegExpMatchArray | null {
  * 
  * ```ts
  * import { dirent } from "@made-simple/util";
- * dirent.iterate(new URL("./example", import.meta.url), data => {
+ * dirent.iterateOver(new URL("./example", import.meta.url), data => {
  *    console.log(data);
  * });
  * ```
  */
-export function iterate<T>(url: URL, callback: (data: T) => void): void {
+export function iterateOver<T>(url: URL, callback: (data: T) => void): void {
     const files = readdirSync(url, { withFileTypes: true });
     files.forEach(async file => {
-        if (file.isDirectory() && isActive(file)) {
+        if (file.isDirectory() && isValidRegex(file)) {
             const subURL = new URL(file.name, url);
-            iterate(subURL, callback);
-        } else if (file.isFile() && isActive(file)) {
-            const data: T = (await import(`${url}/${file.name}`)).default;
+            iterateOver(subURL, callback);
+        } else if (file.isFile() && isValidRegex(file)) {
+            const data: T = (await import(`${url}/${file.name}`)).default
             callback(data);
         }
     });
 }
 
 export default {
-    iterate,
-    isActive
+    iterateOver,
+    isValidRegex
 }
